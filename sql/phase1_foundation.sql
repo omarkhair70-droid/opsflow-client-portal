@@ -1,23 +1,30 @@
--- Phase 1 foundation schema + RLS
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  email text not null unique,
   full_name text,
-  created_at timestamptz not null default now()
+  email text,
+  avatar_url text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 create table if not exists public.organizations (
   id uuid primary key default gen_random_uuid(),
   name text not null,
-  created_at timestamptz not null default now()
+  slug text unique not null,
+  logo_url text,
+  industry text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create type public.internal_role as enum ('internal_admin','internal_member');
 create table if not exists public.organization_members (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
-  role public.internal_role not null,
+  role text not null check (role in ('owner','admin','manager','staff')),
+  status text not null check (status in ('active','invited','suspended')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   unique (organization_id, user_id)
 );
 
@@ -25,17 +32,39 @@ create table if not exists public.clients (
   id uuid primary key default gen_random_uuid(),
   organization_id uuid not null references public.organizations(id) on delete cascade,
   name text not null,
-  created_at timestamptz not null default now()
+  status text not null check (status in ('active','inactive','archived')),
+  primary_contact_name text,
+  primary_contact_email text,
+  phone text,
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
-create type public.client_role as enum ('client_admin','client_member');
 create table if not exists public.client_members (
   id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references public.organizations(id) on delete cascade,
   client_id uuid not null references public.clients(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
-  role public.client_role not null,
+  role text not null check (role in ('client_admin','client_user')),
+  status text not null check (status in ('active','invited','suspended')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
   unique (client_id, user_id)
 );
+
+create or replace function public.is_org_member(org_id uuid) returns boolean language sql stable as $$
+  select exists (select 1 from public.organization_members where organization_id = org_id and user_id = auth.uid() and status = 'active');
+$$;
+create or replace function public.has_org_role(org_id uuid, roles text[]) returns boolean language sql stable as $$
+  select exists (select 1 from public.organization_members where organization_id = org_id and user_id = auth.uid() and status = 'active' and role = any(roles));
+$$;
+create or replace function public.is_client_member(c_id uuid) returns boolean language sql stable as $$
+  select exists (select 1 from public.client_members where client_id = c_id and user_id = auth.uid() and status = 'active');
+$$;
+create or replace function public.has_client_role(c_id uuid, roles text[]) returns boolean language sql stable as $$
+  select exists (select 1 from public.client_members where client_id = c_id and user_id = auth.uid() and status = 'active' and role = any(roles));
+$$;
 
 alter table public.profiles enable row level security;
 alter table public.organizations enable row level security;
@@ -44,20 +73,11 @@ alter table public.clients enable row level security;
 alter table public.client_members enable row level security;
 
 create policy "profile self read" on public.profiles for select using (auth.uid() = id);
-
-create policy "internal org read" on public.organizations for select using (
-  exists(select 1 from public.organization_members om where om.organization_id = organizations.id and om.user_id = auth.uid())
-);
-
-create policy "internal member read" on public.organization_members for select using (
-  exists(select 1 from public.organization_members om where om.organization_id = organization_members.organization_id and om.user_id = auth.uid())
-);
-
-create policy "client read" on public.clients for select using (
-  exists(select 1 from public.organization_members om where om.organization_id = clients.organization_id and om.user_id = auth.uid())
-  or exists(select 1 from public.client_members cm where cm.client_id = clients.id and cm.user_id = auth.uid())
-);
-
-create policy "client member read" on public.client_members for select using (
-  exists(select 1 from public.client_members cm where cm.client_id = client_members.client_id and cm.user_id = auth.uid())
-);
+create policy "org read by active internal" on public.organizations for select using (public.is_org_member(id));
+create policy "org members read by internal" on public.organization_members for select using (public.is_org_member(organization_id));
+create policy "org members manage by owner admin" on public.organization_members for all using (public.has_org_role(organization_id, array['owner','admin'])) with check (public.has_org_role(organization_id, array['owner','admin']));
+create policy "clients read by internal" on public.clients for select using (public.is_org_member(organization_id));
+create policy "clients write by owner admin manager" on public.clients for insert with check (public.has_org_role(organization_id, array['owner','admin','manager']));
+create policy "clients update by owner admin manager" on public.clients for update using (public.has_org_role(organization_id, array['owner','admin','manager'])) with check (public.has_org_role(organization_id, array['owner','admin','manager']));
+create policy "clients read by client member" on public.clients for select using (public.is_client_member(id));
+create policy "client memberships self read" on public.client_members for select using (public.is_client_member(client_id));

@@ -1,48 +1,37 @@
-# OpsFlow Client Portal
+# OpsFlow Client Portal — Phase 1 Foundation
 
-OpsFlow is a **Client Portal & Business Operations Platform** for B2B service companies and operations teams.
+Phase 1 implements only authentication, tenant membership modeling, RLS isolation, and shell routes.
 
-This repository is currently in **Phase 0A (Documentation Only)**.
+## Environment variables
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## Phase 0A Scope
-This phase defines product and architecture direction only.
+## Setup
+1. Install dependencies: `npm install`
+2. Run DB migration SQL in `sql/phase1_foundation.sql` in Supabase SQL editor.
+3. Start app: `npm run dev`
 
-Included:
-- product specification
-- architecture blueprint
-- conceptual database schema
-- row-level security strategy
-- route map (planned only)
-- MVP roadmap
-- demo narrative
-- build rules and engineering guardrails
+## Routes (Phase 1)
+- `/login`
+- `/signup`
+- `/auth/callback`
+- `/onboarding`
+- `/app/[orgSlug]/dashboard`
+- `/app/[orgSlug]/clients`
+- `/portal/[orgSlug]/dashboard`
 
-Excluded in this phase:
-- application code
-- auth pages
-- routes/pages
-- dashboards
-- database migrations
-- Supabase implementation
-- UI components
-- package installation
+## Auth redirect behavior
+After callback/session establishment, `/auth/route` checks membership from DB:
+- active `organization_members` => `/app/[orgSlug]/dashboard`
+- else active `client_members` => `/portal/[orgSlug]/dashboard`
+- else => `/onboarding`
+- if both, internal workspace is preferred
 
-## Documentation Index
-- [Product Spec](docs/PRODUCT_SPEC.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Database Schema (Conceptual)](docs/DATABASE_SCHEMA.md)
-- [RLS Strategy](docs/RLS_STRATEGY.md)
-- [Route Map](docs/ROUTE_MAP.md)
-- [MVP Roadmap](docs/MVP_ROADMAP.md)
-- [Demo Scenario](docs/DEMO_SCENARIO.md)
-- [Build Rules](docs/BUILD_RULES.md)
+## Testing internal vs client separation
+- Use two users in Supabase.
+- User A: active row in `organization_members`.
+- User B: active row only in `client_members`.
+- Sign in as each user and verify destination route.
 
-## Product Positioning
-OpsFlow is intentionally focused on proving strengths in:
-- SaaS multi-tenant architecture
-- role-based access and RLS rigor
-- internal workspace vs client portal separation
-- workflow operations lifecycle
-- secure file visibility and audit integrity
-
-It is **not** intended to copy HILTECH’s implementation path.
+## Intentionally deferred (not in Phase 1)
+Requests, tasks, files, quotes, notifications, analytics, AI, payments, subscriptions, CRM, project management, workflow builder, custom form builder, and real dashboards.
