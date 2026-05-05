@@ -1,48 +1,48 @@
-# OpsFlow Client Portal
+# OpsFlow Client Portal — Phase 1 Foundation
 
-OpsFlow is a **Client Portal & Business Operations Platform** for B2B service companies and operations teams.
+Phase 1 includes only Supabase auth/session flow, user profiles, organizations, internal/client memberships, RLS isolation, membership-based routing, and placeholder workspace shells.
 
-This repository is currently in **Phase 0A (Documentation Only)**.
+## Environment variables
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## Phase 0A Scope
-This phase defines product and architecture direction only.
+## Setup
+1. Install dependencies: `npm install`
+2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
+3. Start app: `npm run dev`
 
-Included:
-- product specification
-- architecture blueprint
-- conceptual database schema
-- row-level security strategy
-- route map (planned only)
-- MVP roadmap
-- demo narrative
-- build rules and engineering guardrails
+## Allowed Phase 1 routes
+- `/login`
+- `/signup`
+- `/auth/callback`
+- `/auth/route`
+- `/onboarding`
+- `/forbidden`
+- `/app/[orgSlug]/dashboard`
+- `/app/[orgSlug]/clients`
+- `/portal/[orgSlug]/dashboard`
 
-Excluded in this phase:
-- application code
-- auth pages
-- routes/pages
-- dashboards
-- database migrations
-- Supabase implementation
-- UI components
-- package installation
+## Auth redirect behavior (`/auth/route`)
+1. Active internal org membership (`organization_members.status = active`) => `/app/[orgSlug]/dashboard`
+2. Else active client membership (`client_members.status = active`) => `/portal/[orgSlug]/dashboard`
+3. Else => `/onboarding`
 
-## Documentation Index
-- [Product Spec](docs/PRODUCT_SPEC.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Database Schema (Conceptual)](docs/DATABASE_SCHEMA.md)
-- [RLS Strategy](docs/RLS_STRATEGY.md)
-- [Route Map](docs/ROUTE_MAP.md)
-- [MVP Roadmap](docs/MVP_ROADMAP.md)
-- [Demo Scenario](docs/DEMO_SCENARIO.md)
-- [Build Rules](docs/BUILD_RULES.md)
+## Route access checks
+- `/app/[orgSlug]/dashboard` and `/app/[orgSlug]/clients` require active internal membership for the exact organization slug.
+- `/portal/[orgSlug]/dashboard` requires active client membership linked to a client under the exact organization slug.
+- Unauthorized users are redirected to `/forbidden`; unauthenticated users to `/login`.
 
-## Product Positioning
-OpsFlow is intentionally focused on proving strengths in:
-- SaaS multi-tenant architecture
-- role-based access and RLS rigor
-- internal workspace vs client portal separation
-- workflow operations lifecycle
-- secure file visibility and audit integrity
+## Profile creation
+`sql/phase1_foundation.sql` creates `handle_new_user` trigger on `auth.users` to insert `public.profiles` rows automatically.
 
-It is **not** intended to copy HILTECH’s implementation path.
+## Demo data/testing guidance
+- Create an organization row with slug (e.g. `acme`).
+- Add internal member row for user A in `organization_members` with `status='active'`.
+- Add client + client member row for user B in same org with `status='active'`.
+- Verify:
+  - user B denied from `/app/acme/dashboard` and `/app/acme/clients`.
+  - user A denied from `/app/other-org/dashboard` if no membership there.
+  - users without matching client membership denied from `/portal/acme/dashboard`.
+
+## Intentionally deferred (not in Phase 1)
+Requests, tasks, comments, files/storage, quotes, notifications, analytics, AI, payments/subscriptions, CRM, project management, workflow builder, custom forms, and real dashboards.
