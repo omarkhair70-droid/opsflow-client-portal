@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "15.3.2",
+    "next": "15.3.8",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "@supabase/supabase-js": "2.49.4"
@@ -24,6 +24,6 @@
     "postcss": "8.5.3",
     "autoprefixer": "10.4.21",
     "eslint": "9.26.0",
-    "eslint-config-next": "15.3.2"
+    "eslint-config-next": "15.3.8"
   }
 }
