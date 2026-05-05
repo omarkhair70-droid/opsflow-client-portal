@@ -53,18 +53,46 @@ create table if not exists public.client_members (
   unique (client_id, user_id)
 );
 
-create or replace function public.is_org_member(org_id uuid) returns boolean language sql stable as $$
+create or replace function public.is_org_member(org_id uuid) returns boolean
+language sql stable security definer set search_path = public
+as $$
   select exists (select 1 from public.organization_members where organization_id = org_id and user_id = auth.uid() and status = 'active');
 $$;
-create or replace function public.has_org_role(org_id uuid, roles text[]) returns boolean language sql stable as $$
+create or replace function public.has_org_role(org_id uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public
+as $$
   select exists (select 1 from public.organization_members where organization_id = org_id and user_id = auth.uid() and status = 'active' and role = any(roles));
 $$;
-create or replace function public.is_client_member(c_id uuid) returns boolean language sql stable as $$
+create or replace function public.is_client_member(c_id uuid) returns boolean
+language sql stable security definer set search_path = public
+as $$
   select exists (select 1 from public.client_members where client_id = c_id and user_id = auth.uid() and status = 'active');
 $$;
-create or replace function public.has_client_role(c_id uuid, roles text[]) returns boolean language sql stable as $$
+create or replace function public.has_client_role(c_id uuid, roles text[]) returns boolean
+language sql stable security definer set search_path = public
+as $$
   select exists (select 1 from public.client_members where client_id = c_id and user_id = auth.uid() and status = 'active' and role = any(roles));
 $$;
+
+
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  insert into public.profiles (id, email, full_name)
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', null))
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
 
 alter table public.profiles enable row level security;
 alter table public.organizations enable row level security;
@@ -80,4 +108,5 @@ create policy "clients read by internal" on public.clients for select using (pub
 create policy "clients write by owner admin manager" on public.clients for insert with check (public.has_org_role(organization_id, array['owner','admin','manager']));
 create policy "clients update by owner admin manager" on public.clients for update using (public.has_org_role(organization_id, array['owner','admin','manager'])) with check (public.has_org_role(organization_id, array['owner','admin','manager']));
 create policy "clients read by client member" on public.clients for select using (public.is_client_member(id));
-create policy "client memberships self read" on public.client_members for select using (public.is_client_member(client_id));
+create policy "client memberships self read" on public.client_members for select using (user_id = auth.uid());
+create policy "client memberships internal read" on public.client_members for select using (public.is_org_member(organization_id));
