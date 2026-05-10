@@ -13,15 +13,17 @@
 ### Internal workspace (implemented)
 - `/app/[orgSlug]/dashboard`
 - `/app/[orgSlug]/clients`
+- `/app/[orgSlug]/requests`
+- `/app/[orgSlug]/requests/[requestId]`
 
 ### Client portal (implemented)
 - `/portal/[orgSlug]/dashboard`
+- `/portal/[orgSlug]/requests`
+- `/portal/[orgSlug]/requests/[requestId]`
 
 ## B. Planned Future Routes
 
 ### Planned internal routes (`/app/[orgSlug]/*`)
-- `/app/[orgSlug]/requests`
-- `/app/[orgSlug]/requests/[requestId]`
 - `/app/[orgSlug]/tasks`
 - `/app/[orgSlug]/quotes`
 - `/app/[orgSlug]/files`
@@ -29,8 +31,6 @@
 - `/app/[orgSlug]/settings/...`
 
 ### Planned portal routes (`/portal/[orgSlug]/*`)
-- `/portal/[orgSlug]/requests`
-- `/portal/[orgSlug]/requests/[requestId]`
 - `/portal/[orgSlug]/quotes`
 - `/portal/[orgSlug]/files`
 - `/portal/[orgSlug]/approvals`

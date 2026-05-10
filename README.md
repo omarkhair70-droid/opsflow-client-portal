@@ -3,7 +3,7 @@
 OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B service companies. It manages the client-work lifecycle from request intake through internal execution, quote/approval, activity history, and closure.
 
 ## Current Status
-**Phase 1 Foundation is implemented** (auth, tenancy foundation, and guarded workspace shells).
+**Phase 2 Request Lifecycle is implemented** (auth+tenancy foundation plus client request intake, internal triage, status/priority management, and baseline activity history).
 
 ### Implemented routes
 - `/login`
@@ -14,7 +14,11 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 - `/forbidden`
 - `/app/[orgSlug]/dashboard`
 - `/app/[orgSlug]/clients`
+- `/app/[orgSlug]/requests`
+- `/app/[orgSlug]/requests/[requestId]`
 - `/portal/[orgSlug]/dashboard`
+- `/portal/[orgSlug]/requests`
+- `/portal/[orgSlug]/requests/[requestId]`
 
 ### Implemented tables
 - `profiles`
@@ -22,6 +26,8 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 - `organization_members`
 - `clients`
 - `client_members`
+- `requests`
+- `activity_events`
 
 ### Implemented access model
 - Supabase auth/session flow with profile auto-provisioning trigger.
@@ -35,10 +41,10 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
   - `has_client_role`
 
 ## Intentionally not built yet
-Requests, tasks, comments, quotes, approvals, file governance, notifications, activity event stream, and closure workflows are **planned but not implemented yet**.
+Tasks, comments, quotes, approvals, file governance, notifications, and closure workflows are **planned but not implemented yet**.
 
 ## Next build target
-**Phase 2 — Request Lifecycle** (client request intake, internal triage foundation, and lifecycle tracking).
+**Phase 3 — Internal Execution** (task model and execution tracking).
 
 ## Key docs
 - `docs/CURRENT_STATE.md`
@@ -58,4 +64,5 @@ Requests, tasks, comments, quotes, approvals, file governance, notifications, ac
 ## Setup
 1. Install dependencies: `npm install`
 2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
-3. Start app: `npm run dev`
+3. Run `sql/phase2_request_lifecycle.sql` in Supabase SQL editor.
+4. Start app: `npm run dev`

@@ -5,18 +5,19 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 
 ## What exists today (implemented)
 - Phase 1 foundation is implemented.
+- Phase 2 Request Lifecycle is implemented.
 - Supabase auth/session flow is implemented.
 - Profile auto-provisioning is implemented.
 - Org-scoped internal and portal shells are implemented.
 - Membership-based redirecting and org-scoped access guards are implemented.
 - Baseline RLS is implemented on foundation tables.
+- Request lifecycle RLS is implemented on `requests` and `activity_events`.
 
 ## What does not exist yet (planned)
-- Request lifecycle tables and flows.
 - Tasks/comments collaboration model.
 - Quotes/approvals lifecycle.
 - File governance flows.
-- Notifications and full activity event domain implementation.
+- Notifications and full activity event domain expansion beyond request events.
 - End-to-end closure workflow.
 
 ## Implemented tables
@@ -25,6 +26,8 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - `organization_members`
 - `clients`
 - `client_members`
+- `requests`
+- `activity_events`
 
 ## Implemented routes
 - `/login`
@@ -35,7 +38,11 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - `/forbidden`
 - `/app/[orgSlug]/dashboard`
 - `/app/[orgSlug]/clients`
+- `/app/[orgSlug]/requests`
+- `/app/[orgSlug]/requests/[requestId]`
 - `/portal/[orgSlug]/dashboard`
+- `/portal/[orgSlug]/requests`
+- `/portal/[orgSlug]/requests/[requestId]`
 
 ## Implemented auth/access model
 - Auth provider: Supabase Auth.
@@ -49,7 +56,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
   - `has_client_role`
 
 ## Next build target
-**Phase 2 — Request Lifecycle**
+**Phase 3 — Internal Execution**
 
 ## Non-goals for next phase
 - No auth model rewrite.

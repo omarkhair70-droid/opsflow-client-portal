@@ -5,11 +5,11 @@
    - Product scope, architecture direction, and guardrails documented.
 2. **Phase 1 — Foundation Implementation — complete**
    - Auth/session, membership model, base schema, RLS baseline, and org-scoped shells implemented.
-3. **Phase 1.5 — Source of Truth Cleanup — current**
+3. **Phase 1.5 — Source of Truth Cleanup — complete**
    - Documentation reconciled to implemented reality and prepared for Phase 2 execution.
-4. **Phase 2 — Request Lifecycle**
-   - Implement `requests` flow: intake, triage states, role-safe visibility, baseline activity events.
-5. **Phase 3 — Internal Execution**
+4. **Phase 2 — Request Lifecycle — complete**
+   - Implemented `requests` flow: intake, triage states, role-safe visibility, baseline activity events.
+5. **Phase 3 — Internal Execution — next**
    - Implement `tasks` (and planned comments support if required), internal collaboration, execution tracking.
 6. **Phase 4 — Commercial Flow**
    - Implement `quotes` and `approvals` with clear client/internal boundaries and lifecycle transitions.

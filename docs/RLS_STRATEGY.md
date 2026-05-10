@@ -27,6 +27,19 @@
 - `clients` writes limited to owner/admin/manager internal roles.
 - `client_members` readable by self and internal org members.
 
+## Implemented in Phase 2
+### `requests` policies
+- Internal active organization members can read all requests in their organization.
+- Active client members can read requests only for their own linked `client_id`.
+- Active client members can insert requests only for their own linked `client_id` and matching `organization_id`; `submitted_by_user_id` must equal `auth.uid()`.
+- Internal active organization members can update requests in their organization.
+- No delete policy in this phase.
+
+### `activity_events` policies
+- Internal active organization members can read activity events for their organization.
+- No direct user insert/update/delete policies are granted.
+- Request audit events are created from database triggers on `requests` insert/update.
+
 ## RLS Principles for Future Tables (Planned)
 1. Keep deny-by-default on every protected table.
 2. Require tenant checks on `organization_id` for all tenant-scoped reads/writes.
@@ -36,13 +49,11 @@
 
 ## Planned Table Coverage (Not Yet Implemented)
 Future tables requiring explicit RLS before use:
-- `requests`
 - `tasks`
 - `quotes`
 - `approvals`
 - `file_assets`
 - `notifications`
-- `activity_events`
 - optional `comments` if introduced
 
 These tables are planned only; this document does not claim active policies exist yet for them.

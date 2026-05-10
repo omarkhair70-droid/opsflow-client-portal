@@ -54,17 +54,43 @@ Source of truth: `sql/phase1_foundation.sql`.
 - `updated_at timestamptz not null default now()`
 - `unique (client_id, user_id)`
 
-## Section B — Planned MVP Schema (Not Yet Implemented)
+## Section B — Implemented Phase 2 Request Lifecycle Schema
+
+Source of truth: `sql/phase2_request_lifecycle.sql`.
+
+### `requests`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references public.organizations(id) on delete cascade`
+- `client_id uuid not null references public.clients(id) on delete cascade`
+- `title text not null`
+- `description text`
+- `status text not null default 'submitted' check (status in ('submitted','triaged','in_progress','waiting_on_client','closed'))`
+- `priority text not null default 'normal' check (priority in ('low','normal','high','urgent'))`
+- `submitted_by_user_id uuid not null references public.profiles(id)`
+- `triaged_by_user_id uuid references public.profiles(id)`
+- `triaged_at timestamptz`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+### `activity_events`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references public.organizations(id) on delete cascade`
+- `actor_user_id uuid references public.profiles(id)`
+- `entity_type text not null`
+- `entity_id uuid not null`
+- `action text not null`
+- `metadata_json jsonb not null default '{}'::jsonb`
+- `occurred_at timestamptz not null default now()`
+
+## Section C — Planned MVP Schema (Not Yet Implemented)
 
 ### Planned tables
-- `requests`
 - `tasks`
 - `quotes`
 - `approvals`
 - `file_assets`
 - `notifications`
-- `activity_events`
-- `comments` (planned only if needed to support request/task collaboration in the product spine)
+- optional `comments` (if needed for request/task collaboration)
 
 ### Planned schema rules
 1. Every tenant-scoped business table must include `organization_id`.
