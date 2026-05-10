@@ -19,7 +19,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - Comments collaboration model.
 - Quotes/approvals lifecycle.
 - File governance flows.
-- Notifications and full activity event domain expansion beyond request events.
+- Notifications and full activity event domain expansion beyond request/task events.
 - End-to-end closure workflow.
 
 ## Implemented tables

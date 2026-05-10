@@ -84,19 +84,19 @@ Source of truth: `sql/phase2_request_lifecycle.sql`.
 
 ## Section C — Implemented in Phase 3
 
-### tasks
-- `id` uuid pk
-- `organization_id` uuid fk organizations
-- `request_id` uuid fk requests
-- `title` text not null
-- `description` text
-- `status` text check in `todo|in_progress|blocked|done`
-- `assigned_to_user_id` uuid fk profiles nullable
-- `created_by_user_id` uuid fk profiles not null
-- `due_at` timestamptz
-- `completed_at` timestamptz
-- `created_at` timestamptz
-- `updated_at` timestamptz
+### `tasks`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references public.organizations(id) on delete cascade`
+- `request_id uuid not null references public.requests(id) on delete cascade`
+- `title text not null`
+- `description text` (nullable)
+- `status text not null default 'todo' check (status in ('todo','in_progress','blocked','done'))`
+- `assigned_to_user_id uuid references public.profiles(id)` (nullable)
+- `created_by_user_id uuid not null references public.profiles(id)`
+- `due_at timestamptz` (nullable)
+- `completed_at timestamptz` (nullable)
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
 
 ## Section D — Planned MVP Schema (Not Yet Implemented)
 
