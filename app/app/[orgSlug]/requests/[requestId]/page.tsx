@@ -89,6 +89,7 @@ async function createQuoteDraft(formData: FormData) {
   const membership = await requireInternalOrgMembership(orgSlug);
   const org = { id: membership.id, slug: membership.slug, name: membership.name };
   const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
+  if (!canManageQuotes) return;
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id; if (!userId) redirect('/login');
