@@ -38,6 +38,46 @@ create index if not exists activity_events_organization_occurred_at_idx
 create index if not exists activity_events_entity_idx
   on public.activity_events (entity_type, entity_id);
 
+
+create or replace function public.enforce_request_identity()
+returns trigger
+language plpgsql
+as $$
+declare
+  client_org_id uuid;
+begin
+  select organization_id into client_org_id
+  from public.clients
+  where id = new.client_id;
+
+  if client_org_id is null then
+    raise exception 'Invalid client_id for request';
+  end if;
+
+  if client_org_id <> new.organization_id then
+    raise exception 'request.organization_id must match client.organization_id';
+  end if;
+
+  if tg_op = 'UPDATE' then
+    if new.organization_id <> old.organization_id then
+      raise exception 'request.organization_id is immutable';
+    end if;
+    if new.client_id <> old.client_id then
+      raise exception 'request.client_id is immutable';
+    end if;
+    if new.submitted_by_user_id <> old.submitted_by_user_id then
+      raise exception 'request.submitted_by_user_id is immutable';
+    end if;
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger requests_enforce_identity
+before insert or update on public.requests
+for each row execute function public.enforce_request_identity();
+
 create or replace function public.set_updated_at()
 returns trigger
 language plpgsql
@@ -129,10 +169,13 @@ on public.requests
 for select
 using (
   exists (
-    select 1 from public.client_members cm
+    select 1
+    from public.client_members cm
+    join public.clients c on c.id = cm.client_id
     where cm.client_id = requests.client_id
       and cm.user_id = auth.uid()
       and cm.status = 'active'
+      and c.organization_id = requests.organization_id
   )
 );
 
