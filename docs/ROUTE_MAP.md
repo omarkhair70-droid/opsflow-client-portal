@@ -15,6 +15,8 @@
 - `/app/[orgSlug]/clients`
 - `/app/[orgSlug]/requests`
 - `/app/[orgSlug]/requests/[requestId]`
+- `/app/[orgSlug]/tasks`
+- `/app/[orgSlug]/tasks/[taskId]`
 
 ### Client portal (implemented)
 - `/portal/[orgSlug]/dashboard`
@@ -24,7 +26,6 @@
 ## B. Planned Future Routes
 
 ### Planned internal routes (`/app/[orgSlug]/*`)
-- `/app/[orgSlug]/tasks`
 - `/app/[orgSlug]/quotes`
 - `/app/[orgSlug]/files`
 - `/app/[orgSlug]/activity`

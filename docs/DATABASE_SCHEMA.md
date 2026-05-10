@@ -82,10 +82,25 @@ Source of truth: `sql/phase2_request_lifecycle.sql`.
 - `metadata_json jsonb not null default '{}'::jsonb`
 - `occurred_at timestamptz not null default now()`
 
-## Section C — Planned MVP Schema (Not Yet Implemented)
+## Section C — Implemented in Phase 3
+
+### tasks
+- `id` uuid pk
+- `organization_id` uuid fk organizations
+- `request_id` uuid fk requests
+- `title` text not null
+- `description` text
+- `status` text check in `todo|in_progress|blocked|done`
+- `assigned_to_user_id` uuid fk profiles nullable
+- `created_by_user_id` uuid fk profiles not null
+- `due_at` timestamptz
+- `completed_at` timestamptz
+- `created_at` timestamptz
+- `updated_at` timestamptz
+
+## Section D — Planned MVP Schema (Not Yet Implemented)
 
 ### Planned tables
-- `tasks`
 - `quotes`
 - `approvals`
 - `file_assets`

@@ -44,7 +44,7 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 Tasks, comments, quotes, approvals, file governance, notifications, and closure workflows are **planned but not implemented yet**.
 
 ## Next build target
-**Phase 3 — Internal Execution** (task model and execution tracking).
+**Phase 4 — Commercial Flow** (quotes + approvals; comments/files still planned).
 
 ## Key docs
 - `docs/CURRENT_STATE.md`

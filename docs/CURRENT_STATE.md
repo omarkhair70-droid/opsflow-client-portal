@@ -56,7 +56,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
   - `has_client_role`
 
 ## Next build target
-**Phase 3 — Internal Execution**
+**Phase 4 — Commercial Flow**
 
 ## Non-goals for next phase
 - No auth model rewrite.

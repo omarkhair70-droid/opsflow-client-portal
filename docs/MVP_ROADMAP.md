@@ -9,9 +9,9 @@
    - Documentation reconciled to implemented reality and prepared for Phase 2 execution.
 4. **Phase 2 — Request Lifecycle — complete**
    - Implemented `requests` flow: intake, triage states, role-safe visibility, baseline activity events.
-5. **Phase 3 — Internal Execution — next**
-   - Implement `tasks` (and planned comments support if required), internal collaboration, execution tracking.
-6. **Phase 4 — Commercial Flow**
+5. **Phase 3 — Internal Execution — implemented**
+   - Implemented `tasks` assignment, due dates, status updates, and task activity events.
+6. **Phase 4 — Commercial Flow — next**
    - Implement `quotes` and `approvals` with clear client/internal boundaries and lifecycle transitions.
 7. **Phase 5 — File Governance**
    - Implement `file_assets` with visibility controls, secure linking, and policy enforcement.
@@ -23,4 +23,4 @@
 ## MVP Exit Criteria
 MVP is complete when OpsFlow demonstrates this real end-to-end flow with tenant-safe controls:
 
-**client request → internal triage → tasks/files → quote → approval → activity history → closure**
+**client request → internal triage → tasks (implemented) / files (planned) → quote → approval → activity history → closure**

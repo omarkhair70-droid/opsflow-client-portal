@@ -47,9 +47,11 @@
 4. Apply role-conditioned write policies for sensitive transitions.
 5. Enforce internal-only vs portal-visible data boundaries at the policy layer.
 
+## Implemented Table Coverage (Phase 3 additions)
+- `tasks`: active internal org members can `select/insert/update` in-tenant; no delete policy; no portal access.
+
 ## Planned Table Coverage (Not Yet Implemented)
 Future tables requiring explicit RLS before use:
-- `tasks`
 - `quotes`
 - `approvals`
 - `file_assets`
