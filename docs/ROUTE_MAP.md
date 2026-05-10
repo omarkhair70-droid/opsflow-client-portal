@@ -1,43 +1,45 @@
-# OpsFlow Route Map (Conceptual, Phase 0A)
+# OpsFlow Route Map
 
-## Purpose
-Define intended route structure and context separation. No routes are implemented in this phase.
+## A. Implemented Current Routes
 
-## Route Domains
-1. **Public Marketing / Landing**
-   - informational, unauthenticated
-2. **Internal Workspace** (`/app/*`)
-   - operations and administrative workflows
-3. **Client Portal** (`/portal/*`)
-   - client-restricted interactions
+### Public / auth flow
+- `/login`
+- `/signup`
+- `/auth/callback`
+- `/auth/route`
+- `/onboarding`
+- `/forbidden`
 
-## Planned Internal Routes (`/app`)
-- `/app/overview`
-- `/app/requests`
-- `/app/requests/:requestId`
-- `/app/tasks`
-- `/app/tasks/:taskId`
-- `/app/clients`
-- `/app/clients/:clientAccountId`
-- `/app/quotes`
-- `/app/quotes/:quoteId`
-- `/app/files`
-- `/app/activity`
-- `/app/settings/org`
-- `/app/settings/members`
-- `/app/settings/roles`
+### Internal workspace (implemented)
+- `/app/[orgSlug]/dashboard`
+- `/app/[orgSlug]/clients`
 
-## Planned Client Portal Routes (`/portal`)
-- `/portal/home`
-- `/portal/requests`
-- `/portal/requests/:requestId`
-- `/portal/quotes`
-- `/portal/quotes/:quoteId`
-- `/portal/files`
-- `/portal/approvals`
-- `/portal/account`
+### Client portal (implemented)
+- `/portal/[orgSlug]/dashboard`
 
-## Access Mapping Notes
-- `/app/*`: internal roles only
-- `/portal/*`: client users limited to linked client account data
-- Any shared entities (e.g., requests, quotes, files) require context-specific filtering and field shaping
+## B. Planned Future Routes
+
+### Planned internal routes (`/app/[orgSlug]/*`)
+- `/app/[orgSlug]/requests`
+- `/app/[orgSlug]/requests/[requestId]`
+- `/app/[orgSlug]/tasks`
+- `/app/[orgSlug]/quotes`
+- `/app/[orgSlug]/files`
+- `/app/[orgSlug]/activity`
+- `/app/[orgSlug]/settings/...`
+
+### Planned portal routes (`/portal/[orgSlug]/*`)
+- `/portal/[orgSlug]/requests`
+- `/portal/[orgSlug]/requests/[requestId]`
+- `/portal/[orgSlug]/quotes`
+- `/portal/[orgSlug]/files`
+- `/portal/[orgSlug]/approvals`
+- `/portal/[orgSlug]/account`
+
+## Route guard model (implemented)
+- Internal route checks use `requireInternalOrgAccess`.
+- Portal route checks use `requirePortalOrgAccess`.
+- Unauthorized users redirect to `/forbidden`; unauthenticated users redirect to `/login`.
+
+## Route hygiene note
+Obsolete conceptual examples such as `/app/overview` and `/portal/home` are not current implemented routes.

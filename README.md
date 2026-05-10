@@ -1,17 +1,11 @@
-# OpsFlow Client Portal — Phase 1 Foundation
+# OpsFlow Client Portal
 
-Phase 1 includes only Supabase auth/session flow, user profiles, organizations, internal/client memberships, RLS isolation, membership-based routing, and placeholder workspace shells.
+OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B service companies. It manages the client-work lifecycle from request intake through internal execution, quote/approval, activity history, and closure.
 
-## Environment variables
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+## Current Status
+**Phase 1 Foundation is implemented** (auth, tenancy foundation, and guarded workspace shells).
 
-## Setup
-1. Install dependencies: `npm install`
-2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
-3. Start app: `npm run dev`
-
-## Allowed Phase 1 routes
+### Implemented routes
 - `/login`
 - `/signup`
 - `/auth/callback`
@@ -22,27 +16,42 @@ Phase 1 includes only Supabase auth/session flow, user profiles, organizations, 
 - `/app/[orgSlug]/clients`
 - `/portal/[orgSlug]/dashboard`
 
-## Auth redirect behavior (`/auth/route`)
-1. Active internal org membership (`organization_members.status = active`) => `/app/[orgSlug]/dashboard`
-2. Else active client membership (`client_members.status = active`) => `/portal/[orgSlug]/dashboard`
-3. Else => `/onboarding`
+### Implemented tables
+- `profiles`
+- `organizations`
+- `organization_members`
+- `clients`
+- `client_members`
 
-## Route access checks
-- `/app/[orgSlug]/dashboard` and `/app/[orgSlug]/clients` require active internal membership for the exact organization slug.
-- `/portal/[orgSlug]/dashboard` requires active client membership linked to a client under the exact organization slug.
-- Unauthorized users are redirected to `/forbidden`; unauthenticated users to `/login`.
+### Implemented access model
+- Supabase auth/session flow with profile auto-provisioning trigger.
+- Membership-based redirect flow at `/auth/route`.
+- Internal route guards via `requireInternalOrgAccess`.
+- Portal route guards via `requirePortalOrgAccess`.
+- RLS enabled with helper functions:
+  - `is_org_member`
+  - `has_org_role`
+  - `is_client_member`
+  - `has_client_role`
 
-## Profile creation
-`sql/phase1_foundation.sql` creates `handle_new_user` trigger on `auth.users` to insert `public.profiles` rows automatically.
+## Intentionally not built yet
+Requests, tasks, comments, quotes, approvals, file governance, notifications, activity event stream, and closure workflows are **planned but not implemented yet**.
 
-## Demo data/testing guidance
-- Create an organization row with slug (e.g. `acme`).
-- Add internal member row for user A in `organization_members` with `status='active'`.
-- Add client + client member row for user B in same org with `status='active'`.
-- Verify:
-  - user B denied from `/app/acme/dashboard` and `/app/acme/clients`.
-  - user A denied from `/app/other-org/dashboard` if no membership there.
-  - users without matching client membership denied from `/portal/acme/dashboard`.
+## Next build target
+**Phase 2 — Request Lifecycle** (client request intake, internal triage foundation, and lifecycle tracking).
 
-## Intentionally deferred (not in Phase 1)
-Requests, tasks, comments, files/storage, quotes, notifications, analytics, AI, payments/subscriptions, CRM, project management, workflow builder, custom forms, and real dashboards.
+## Key docs
+- `docs/CURRENT_STATE.md`
+- `docs/PRODUCT_SPEC.md`
+- `docs/ARCHITECTURE.md`
+- `docs/DATABASE_SCHEMA.md`
+- `docs/RLS_STRATEGY.md`
+- `docs/ROUTE_MAP.md`
+- `docs/MVP_ROADMAP.md`
+- `docs/DEMO_SCENARIO.md`
+- `docs/BUILD_RULES.md`
+
+## Setup
+1. Install dependencies: `npm install`
+2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
+3. Start app: `npm run dev`

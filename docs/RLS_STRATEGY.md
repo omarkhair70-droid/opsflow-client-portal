@@ -1,41 +1,48 @@
-# OpsFlow RLS Strategy (Phase 0A)
+# OpsFlow RLS Strategy
 
 ## Objectives
-- Enforce strict tenant isolation
-- Enforce role-based access across internal and client contexts
-- Prevent exposure of internal-only records to portal users
+- Enforce strict tenant isolation.
+- Enforce role-aware access across internal and portal contexts.
+- Prevent exposure of internal-only records to portal users.
 
-## Policy Principles
-1. **Deny by default** on all protected tables.
-2. **Tenant membership required** for every data read/write.
-3. **Role-conditioned writes** for sensitive actions (e.g., quote finalization).
-4. **Client visibility constraints** for portal sessions.
-5. **Audit insert guarantees** for tracked actions.
+## Implemented in Phase 1
+### Protected foundation tables
+- `profiles`
+- `organizations`
+- `organization_members`
+- `clients`
+- `client_members`
 
-## Access Context Model
-Session context should resolve:
-- authenticated `user_id`
-- active `organization_id`
-- membership `role`
-- optional `client_account_id` constraint for client portal users
+### Implemented helper functions
+- `is_org_member(org_id uuid)`
+- `has_org_role(org_id uuid, roles text[])`
+- `is_client_member(c_id uuid)`
+- `has_client_role(c_id uuid, roles text[])`
 
-## Table Access Patterns (Planned)
-- `organizations`: readable by active members only.
-- `organization_memberships`: readable by admins/managers and self rows.
-- `client_accounts`: readable by internal roles; portal users only for linked account.
-- `requests`: internal roles for org-wide requests; portal users for linked client account.
-- `tasks`: internal roles only unless explicitly client-visible tasks are introduced later.
-- `quotes` and `approvals`: internal roles plus scoped client read/respond rights.
-- `file_assets`: filtered by tenant + visibility scope (`client` only in portal).
-- `activity_events`: internal roles only by default.
+### Implemented policy posture
+- Deny-by-default via RLS on foundation tables.
+- `organizations` readable by active internal org members.
+- `organization_members` readable by internal members; managed by owner/admin roles.
+- `clients` readable by internal org members and linked active client members.
+- `clients` writes limited to owner/admin/manager internal roles.
+- `client_members` readable by self and internal org members.
 
-## Internal vs Portal Enforcement
-- Internal routes operate with full organization-scoped role checks.
-- Portal routes apply additional client-account filters.
-- Internal-only entities/fields should never be exposed to portal queries.
+## RLS Principles for Future Tables (Planned)
+1. Keep deny-by-default on every protected table.
+2. Require tenant checks on `organization_id` for all tenant-scoped reads/writes.
+3. Separate internal and portal access paths explicitly.
+4. Apply role-conditioned write policies for sensitive transitions.
+5. Enforce internal-only vs portal-visible data boundaries at the policy layer.
 
-## Testing Strategy (Future)
-- Policy unit tests per table
-- Cross-tenant access denial tests
-- Role matrix tests (owner/admin/manager/member/client)
-- File visibility leakage tests
+## Planned Table Coverage (Not Yet Implemented)
+Future tables requiring explicit RLS before use:
+- `requests`
+- `tasks`
+- `quotes`
+- `approvals`
+- `file_assets`
+- `notifications`
+- `activity_events`
+- optional `comments` if introduced
+
+These tables are planned only; this document does not claim active policies exist yet for them.
