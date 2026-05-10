@@ -1,61 +1,21 @@
 # OpsFlow Current State Snapshot
 
-## What OpsFlow is
-OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service companies, designed to run the lifecycle from request intake to internal execution, quote/approval, activity history, and closure.
-
-## What exists today (implemented)
-- Phase 1 foundation is implemented.
-- Supabase auth/session flow is implemented.
-- Profile auto-provisioning is implemented.
-- Org-scoped internal and portal shells are implemented.
-- Membership-based redirecting and org-scoped access guards are implemented.
-- Baseline RLS is implemented on foundation tables.
-
-## What does not exist yet (planned)
-- Request lifecycle tables and flows.
-- Tasks/comments collaboration model.
-- Quotes/approvals lifecycle.
-- File governance flows.
-- Notifications and full activity event domain implementation.
-- End-to-end closure workflow.
+## Implemented
+- Phase 1 foundation and Phase 2 Request Lifecycle are implemented.
+- Portal users can submit and view only their own client requests.
+- Internal users can list/view org requests and update status/priority.
+- Request audit activity is recorded in `activity_events` via DB triggers.
 
 ## Implemented tables
-- `profiles`
-- `organizations`
-- `organization_members`
-- `clients`
-- `client_members`
+- `profiles`, `organizations`, `organization_members`, `clients`, `client_members`
+- `requests`, `activity_events`
 
 ## Implemented routes
-- `/login`
-- `/signup`
-- `/auth/callback`
-- `/auth/route`
-- `/onboarding`
-- `/forbidden`
-- `/app/[orgSlug]/dashboard`
-- `/app/[orgSlug]/clients`
+- `/login`, `/signup`, `/auth/callback`, `/auth/route`, `/onboarding`, `/forbidden`
+- `/app/[orgSlug]/dashboard`, `/app/[orgSlug]/clients`
+- `/app/[orgSlug]/requests`, `/app/[orgSlug]/requests/[requestId]`
 - `/portal/[orgSlug]/dashboard`
-
-## Implemented auth/access model
-- Auth provider: Supabase Auth.
-- Redirect model: `/auth/route` resolves active membership and routes accordingly.
-- Internal guard helper: `requireInternalOrgAccess`.
-- Portal guard helper: `requirePortalOrgAccess`.
-- RLS helper functions:
-  - `is_org_member`
-  - `has_org_role`
-  - `is_client_member`
-  - `has_client_role`
+- `/portal/[orgSlug]/requests`, `/portal/[orgSlug]/requests/[requestId]`
 
 ## Next build target
-**Phase 2 — Request Lifecycle**
-
-## Non-goals for next phase
-- No auth model rewrite.
-- No table renames to conceptual legacy names.
-- No UI-wide redesign.
-- No unrelated scope expansion (CRM/ERP/accounting/AI).
-
-## Conflict resolution note
-If another document conflicts with this file and the current code/SQL implementation, current implementation wins until docs are updated.
+**Phase 3 — Internal Execution**
