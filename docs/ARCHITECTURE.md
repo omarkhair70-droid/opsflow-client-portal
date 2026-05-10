@@ -12,7 +12,8 @@
 - Portal context: `/portal/[orgSlug]/*`
 
 ### Auth and access enforcement
-- Supabase auth/session handling is active.
+- Supabase auth/session handling is active using server-side httpOnly cookies.
+- Email magic-link/signup confirmation is handled by `/auth/confirm` via Supabase token-hash verification (`verifyOtp`) before redirecting to `/auth/route`.
 - Membership-based redirect flow is active (`/auth/route`).
 - Internal guard implemented: `requireInternalOrgAccess`.
 - Portal guard implemented: `requirePortalOrgAccess`.

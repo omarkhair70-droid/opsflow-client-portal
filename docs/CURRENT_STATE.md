@@ -7,7 +7,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - Phase 1 foundation is implemented.
 - Phase 2 Request Lifecycle is implemented.
 - Phase 3 Internal Execution is implemented.
-- Supabase auth/session flow is implemented.
+- Supabase auth/session flow is implemented with server-side session cookies and token-hash confirmation for email magic links.
 - Profile auto-provisioning is implemented.
 - Org-scoped internal and portal shells are implemented.
 - Membership-based redirecting and org-scoped access guards are implemented.
@@ -36,6 +36,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - `/login`
 - `/signup`
 - `/auth/callback`
+- `/auth/confirm`
 - `/auth/route`
 - `/onboarding`
 - `/forbidden`

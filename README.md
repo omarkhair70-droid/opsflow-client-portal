@@ -9,6 +9,7 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 - `/login`
 - `/signup`
 - `/auth/callback`
+- `/auth/confirm`
 - `/auth/route`
 - `/onboarding`
 - `/forbidden`
@@ -70,3 +71,14 @@ Comments, quotes, approvals, file governance, notifications, and closure workflo
 3. Run `sql/phase2_request_lifecycle.sql` in Supabase SQL editor.
 4. Run `sql/phase3_internal_execution.sql` in Supabase SQL editor.
 5. Start app: `npm run dev`
+
+## Auth setup notes (Supabase email templates)
+OpsFlow uses **server-side session cookies** (`sb-access-token`, `sb-refresh-token`) for authenticated routing.
+
+Magic-link and email confirmation flows must hit the server confirmation route so the backend can verify the token hash and set httpOnly cookies before redirecting to `/auth/route`.
+
+For the **Magic Link** email template, use:
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
+
+For the **Confirm signup** email template, use:
+`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
