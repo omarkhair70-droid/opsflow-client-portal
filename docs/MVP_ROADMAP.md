@@ -24,3 +24,4 @@
 MVP is complete when OpsFlow demonstrates this real end-to-end flow with tenant-safe controls:
 
 **client request → internal triage → tasks (implemented) / files (planned) → quote → approval → activity history → closure**
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

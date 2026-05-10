@@ -42,3 +42,4 @@ The following boundaries are planned and should be implemented as phased vertica
 - Tenant-scoped querying and indexing patterns.
 - Domain boundaries designed for modular evolution.
 - Event/audit structures designed for growth and compliance needs.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

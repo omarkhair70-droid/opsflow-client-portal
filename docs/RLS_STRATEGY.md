@@ -60,3 +60,4 @@ Future tables requiring explicit RLS before use:
 - optional `comments` if introduced
 
 These tables are planned only; this document does not claim active policies exist yet for them.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

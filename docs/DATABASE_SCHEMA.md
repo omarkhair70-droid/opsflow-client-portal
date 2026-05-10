@@ -119,3 +119,4 @@ Source of truth: `sql/phase2_request_lifecycle.sql`.
 
 ## Terminology rule
 `organization_members`, `clients`, and `client_members` are the implemented Phase 1 names. Deprecated conceptual names such as `organization_memberships`, `client_accounts`, and `client_contacts` are not implemented schema objects.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

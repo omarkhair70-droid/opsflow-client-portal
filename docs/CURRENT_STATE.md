@@ -72,3 +72,4 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 
 ## Conflict resolution note
 If another document conflicts with this file and the current code/SQL implementation, current implementation wins until docs are updated.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

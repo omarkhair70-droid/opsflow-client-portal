@@ -32,3 +32,4 @@ Stakeholders can clearly see:
 - how internal and portal contexts remain properly separated
 - how lifecycle actions are traceable through activity history
 - how the platform positioning differs from HILTECH via SaaS architecture and governance rigor
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

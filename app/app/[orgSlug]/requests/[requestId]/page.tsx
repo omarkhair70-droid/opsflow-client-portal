@@ -9,6 +9,7 @@ import {
   REQUEST_STATUS_LABELS,
 } from "@/lib/requests";
 import { TASK_STATUS_LABELS } from "@/lib/tasks";
+import { QUOTE_STATUS_LABELS } from "@/lib/quotes";
 
 async function updateRequest(formData: FormData) {
   "use server";
@@ -77,6 +78,21 @@ async function createTask(formData: FormData) {
   redirect(`/app/${orgSlug}/requests/${requestId}`);
 }
 
+
+
+async function createQuoteDraft(formData: FormData) {
+  "use server";
+  const orgSlug = String(formData.get("orgSlug") ?? "");
+  const requestId = String(formData.get("requestId") ?? "");
+  const org = await requireInternalOrgAccess(orgSlug);
+  const supabase = await createServerSupabaseClient();
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id; if (!userId) redirect('/login');
+  const {data:maxRow}=await supabase.from('quotes').select('version_number').eq('request_id',requestId).order('version_number',{ascending:false}).limit(1).maybeSingle();
+  await supabase.from('quotes').insert({organization_id:org.id,request_id:requestId,version_number:(maxRow?.version_number ?? 0)+1,title:String(formData.get('title')??''),scope_summary:String(formData.get('scope_summary')??''),total_amount:Number(formData.get('total_amount')??0),currency:String(formData.get('currency')??'USD'),notes_to_client:String(formData.get('notes_to_client')??'')||null,valid_until:String(formData.get('valid_until')??'')||null,created_by_user_id:userId});
+  redirect(`/app/${orgSlug}/requests/${requestId}`);
+}
+
 export default async function InternalRequestDetail({
   params,
 }: {
@@ -86,7 +102,7 @@ export default async function InternalRequestDetail({
   const org = await requireInternalOrgAccess(orgSlug);
   const supabase = await createServerSupabaseClient();
 
-  const [{ data: request }, { data: events }, { data: members }, { data: tasks }] = await Promise.all([
+  const [{ data: request }, { data: events }, { data: members }, { data: tasks }, { data: quotes }] = await Promise.all([
     supabase
       .from("requests")
       .select(
@@ -113,6 +129,7 @@ export default async function InternalRequestDetail({
       .eq("organization_id", org.id)
       .eq("request_id", requestId)
       .order("created_at", { ascending: false }),
+    supabase.from("quotes").select("id,title,version_number,status,total_amount,currency").eq("organization_id", org.id).eq("request_id", requestId).order("version_number", { ascending: false }),
   ]);
 
   if (!request) notFound();
@@ -199,6 +216,22 @@ export default async function InternalRequestDetail({
             </li>
           ))}
         </ul>
+      </section>
+
+      
+<section>
+        <h2 className="text-xl font-medium mb-2">Commercial Flow</h2>
+        <form action={createQuoteDraft} className="space-y-2 max-w-md mb-4">
+          <input type="hidden" name="orgSlug" value={org.slug} /><input type="hidden" name="requestId" value={request.id} />
+          <input name="title" required placeholder="Quote title" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <textarea name="scope_summary" required placeholder="Scope summary" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <input name="total_amount" type="number" step="0.01" required className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <input name="currency" defaultValue="USD" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <textarea name="notes_to_client" placeholder="Notes" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <input name="valid_until" type="date" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
+          <button type="submit" className="rounded bg-blue-600 px-4 py-2">Create Quote Draft</button>
+        </form>
+        <ul className="space-y-2">{(quotes ?? []).map((quote: any) => (<li key={quote.id}><Link className="text-blue-400 hover:underline" href={`/app/${org.slug}/quotes/${quote.id}`}>V{quote.version_number} - {quote.title}</Link> ({QUOTE_STATUS_LABELS[quote.status as keyof typeof QUOTE_STATUS_LABELS]})</li>))}</ul>
       </section>
 
       <section>

@@ -47,3 +47,4 @@ OpsFlow addresses this through strict tenant isolation, role-aware access, and c
 
 ## Positioning Relative to HILTECH
 OpsFlow is positioned as a flagship SaaS product with strong multi-tenant architecture, strict internal/client separation, and security-first workflow governance. It is not attempting HILTECH feature parity as the primary proof; its proof is operational rigor, access control integrity, and lifecycle traceability.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

@@ -44,3 +44,4 @@
 
 ## Route hygiene note
 Obsolete conceptual examples such as `/app/overview` and `/portal/home` are not current implemented routes.
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.

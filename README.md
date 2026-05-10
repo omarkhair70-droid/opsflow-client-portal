@@ -82,3 +82,4 @@ For the **Magic Link** email template, use:
 
 For the **Confirm signup** email template, use:
 `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
+\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.
