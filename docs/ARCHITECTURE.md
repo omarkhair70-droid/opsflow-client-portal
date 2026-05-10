@@ -25,7 +25,7 @@
 ## Planned Domain Service Boundaries (MVP)
 The following boundaries are planned and should be implemented as phased vertical slices, not treated as already complete:
 - **Request Intake**: `requests` creation, triage, and lifecycle transitions.
-- **Task Execution**: `tasks` assignment, ownership, due dates, completion.
+- **Task Execution (implemented)**: `tasks` assignment, ownership, due dates, completion, and activity audit events.
 - **Commercial Flow**: `quotes` versioning and `approvals` decisions.
 - **File Governance**: `file_assets` metadata + visibility controls.
 - **Notifications**: event-triggered user notifications.

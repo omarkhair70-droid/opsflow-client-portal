@@ -3,7 +3,7 @@
 OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B service companies. It manages the client-work lifecycle from request intake through internal execution, quote/approval, activity history, and closure.
 
 ## Current Status
-**Phase 2 Request Lifecycle is implemented** (auth+tenancy foundation plus client request intake, internal triage, status/priority management, and baseline activity history).
+**Phase 3 — Internal Execution is implemented** (adds internal task execution on top of foundation + request lifecycle).
 
 ### Implemented routes
 - `/login`
@@ -16,6 +16,8 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 - `/app/[orgSlug]/clients`
 - `/app/[orgSlug]/requests`
 - `/app/[orgSlug]/requests/[requestId]`
+- `/app/[orgSlug]/tasks`
+- `/app/[orgSlug]/tasks/[taskId]`
 - `/portal/[orgSlug]/dashboard`
 - `/portal/[orgSlug]/requests`
 - `/portal/[orgSlug]/requests/[requestId]`
@@ -28,6 +30,7 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
 - `client_members`
 - `requests`
 - `activity_events`
+- `tasks`
 
 ### Implemented access model
 - Supabase auth/session flow with profile auto-provisioning trigger.
@@ -41,10 +44,10 @@ OpsFlow is a SaaS **Client Portal & Business Operations Platform** for B2B servi
   - `has_client_role`
 
 ## Intentionally not built yet
-Tasks, comments, quotes, approvals, file governance, notifications, and closure workflows are **planned but not implemented yet**.
+Comments, quotes, approvals, file governance, notifications, and closure workflows are **planned but not implemented yet**.
 
 ## Next build target
-**Phase 3 — Internal Execution** (task model and execution tracking).
+**Phase 4 — Commercial Flow** (quotes + approvals; comments/files still planned).
 
 ## Key docs
 - `docs/CURRENT_STATE.md`
@@ -65,4 +68,5 @@ Tasks, comments, quotes, approvals, file governance, notifications, and closure 
 1. Install dependencies: `npm install`
 2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
 3. Run `sql/phase2_request_lifecycle.sql` in Supabase SQL editor.
-4. Start app: `npm run dev`
+4. Run `sql/phase3_internal_execution.sql` in Supabase SQL editor.
+5. Start app: `npm run dev`
