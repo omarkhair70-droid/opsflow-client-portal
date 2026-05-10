@@ -4,7 +4,7 @@
 OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service companies, designed to run the lifecycle from request intake to internal execution, quote/approval, activity history, and closure.
 
 ## What exists today (implemented)
-- Phase 1 foundation is live.
+- Phase 1 foundation is implemented.
 - Supabase auth/session flow is implemented.
 - Profile auto-provisioning is implemented.
 - Org-scoped internal and portal shells are implemented.

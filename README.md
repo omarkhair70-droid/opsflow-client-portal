@@ -51,6 +51,10 @@ Requests, tasks, comments, quotes, approvals, file governance, notifications, ac
 - `docs/DEMO_SCENARIO.md`
 - `docs/BUILD_RULES.md`
 
+## Environment variables
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
 ## Setup
 1. Install dependencies: `npm install`
 2. Run `sql/phase1_foundation.sql` in Supabase SQL editor.
