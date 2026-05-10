@@ -17,22 +17,22 @@
 - `/app/[orgSlug]/requests/[requestId]`
 - `/app/[orgSlug]/tasks`
 - `/app/[orgSlug]/tasks/[taskId]`
+- `/app/[orgSlug]/quotes/[quoteId]`
 
 ### Client portal (implemented)
 - `/portal/[orgSlug]/dashboard`
 - `/portal/[orgSlug]/requests`
 - `/portal/[orgSlug]/requests/[requestId]`
+- `/portal/[orgSlug]/quotes/[quoteId]`
 
 ## B. Planned Future Routes
 
 ### Planned internal routes (`/app/[orgSlug]/*`)
-- `/app/[orgSlug]/quotes`
 - `/app/[orgSlug]/files`
 - `/app/[orgSlug]/activity`
 - `/app/[orgSlug]/settings/...`
 
 ### Planned portal routes (`/portal/[orgSlug]/*`)
-- `/portal/[orgSlug]/quotes`
 - `/portal/[orgSlug]/files`
 - `/portal/[orgSlug]/approvals`
 - `/portal/[orgSlug]/account`
@@ -44,3 +44,4 @@
 
 ## Route hygiene note
 Obsolete conceptual examples such as `/app/overview` and `/portal/home` are not current implemented routes.
+

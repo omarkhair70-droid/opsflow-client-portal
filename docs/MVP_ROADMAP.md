@@ -11,9 +11,9 @@
    - Implemented `requests` flow: intake, triage states, role-safe visibility, baseline activity events.
 5. **Phase 3 — Internal Execution — implemented**
    - Implemented `tasks` assignment, due dates, status updates, and task activity events.
-6. **Phase 4 — Commercial Flow — next**
-   - Implement `quotes` and `approvals` with clear client/internal boundaries and lifecycle transitions.
-7. **Phase 5 — File Governance**
+6. **Phase 4 — Commercial Flow — implemented**
+   - Implemented `quotes` and `approvals` with clear client/internal boundaries and lifecycle transitions.
+7. **Phase 5 — File Governance — next**
    - Implement `file_assets` with visibility controls, secure linking, and policy enforcement.
 8. **Phase 6 — Notifications + Demo Polish**
    - Implement `notifications`, tighten demo coherence, and ensure lifecycle usability end-to-end.
@@ -24,3 +24,4 @@
 MVP is complete when OpsFlow demonstrates this real end-to-end flow with tenant-safe controls:
 
 **client request → internal triage → tasks (implemented) / files (planned) → quote → approval → activity history → closure**
+

@@ -7,6 +7,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - Phase 1 foundation is implemented.
 - Phase 2 Request Lifecycle is implemented.
 - Phase 3 Internal Execution is implemented.
+- Phase 4 Commercial Flow is implemented.
 - Supabase auth/session flow is implemented with server-side session cookies and token-hash confirmation for email magic links.
 - Profile auto-provisioning is implemented.
 - Org-scoped internal and portal shells are implemented.
@@ -17,9 +18,8 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 
 ## What does not exist yet (planned)
 - Comments collaboration model.
-- Quotes/approvals lifecycle.
 - File governance flows.
-- Notifications and full activity event domain expansion beyond request/task events.
+- Notifications and full activity event domain expansion beyond request/task/quote events.
 - End-to-end closure workflow.
 
 ## Implemented tables
@@ -31,6 +31,8 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - `requests`
 - `activity_events`
 - `tasks`
+- `quotes`
+- `approvals`
 
 ## Implemented routes
 - `/login`
@@ -46,9 +48,13 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 - `/app/[orgSlug]/requests/[requestId]`
 - `/app/[orgSlug]/tasks`
 - `/app/[orgSlug]/tasks/[taskId]`
+- `/app/[orgSlug]/quotes`
+- `/app/[orgSlug]/quotes/[quoteId]`
 - `/portal/[orgSlug]/dashboard`
 - `/portal/[orgSlug]/requests`
 - `/portal/[orgSlug]/requests/[requestId]`
+- `/portal/[orgSlug]/quotes`
+- `/portal/[orgSlug]/quotes/[quoteId]`
 
 ## Implemented auth/access model
 - Auth provider: Supabase Auth.
@@ -62,7 +68,7 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
   - `has_client_role`
 
 ## Next build target
-**Phase 4 — Commercial Flow**
+**Phase 5 — File Governance**
 
 ## Non-goals for next phase
 - No auth model rewrite.
@@ -72,3 +78,4 @@ OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service c
 
 ## Conflict resolution note
 If another document conflicts with this file and the current code/SQL implementation, current implementation wins until docs are updated.
+

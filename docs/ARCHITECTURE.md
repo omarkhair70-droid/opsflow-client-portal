@@ -23,14 +23,16 @@
 - RLS is enabled on implemented foundation tables.
 - Membership/role helper functions are active for policy checks.
 
-## Planned Domain Service Boundaries (MVP)
-The following boundaries are planned and should be implemented as phased vertical slices, not treated as already complete:
+## Domain Service Boundaries (MVP)
+Implemented boundaries:
 - **Request Intake**: `requests` creation, triage, and lifecycle transitions.
-- **Task Execution (implemented)**: `tasks` assignment, ownership, due dates, completion, and activity audit events.
-- **Commercial Flow**: `quotes` versioning and `approvals` decisions.
+- **Task Execution**: `tasks` assignment, ownership, due dates, completion, and activity audit events.
+- **Commercial Flow**: `quotes` versioning/publication and `approvals` decisions.
+
+Planned boundaries:
 - **File Governance**: `file_assets` metadata + visibility controls.
 - **Notifications**: event-triggered user notifications.
-- **Activity Ledger**: append-only `activity_events` for critical transitions.
+- **Optional comments / closure** extensions where required.
 
 ## Security Model (Cross-Cutting)
 - Deny-by-default posture for protected data.
@@ -42,3 +44,4 @@ The following boundaries are planned and should be implemented as phased vertica
 - Tenant-scoped querying and indexing patterns.
 - Domain boundaries designed for modular evolution.
 - Event/audit structures designed for growth and compliance needs.
+

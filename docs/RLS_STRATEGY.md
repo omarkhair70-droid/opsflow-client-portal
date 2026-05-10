@@ -40,6 +40,20 @@
 - No direct user insert/update/delete policies are granted.
 - Request audit events are created from database triggers on `requests` insert/update.
 
+
+## Implemented in Phase 4
+### `quotes` policies
+- Internal active organization members can read quotes in their organization.
+- Internal owner/admin/manager roles can insert and update quotes in their organization.
+- Portal active client members can read only non-draft quotes tied to their own client requests.
+- No delete policy in this phase.
+
+### `approvals` policies
+- Internal active organization members can read approvals in their organization.
+- Portal active client members can read approvals only for their own client request quotes.
+- Portal active client members can insert approvals only on published quotes tied to their client and with `decided_by_user_id = auth.uid()`.
+- No update/delete policies in this phase.
+
 ## RLS Principles for Future Tables (Planned)
 1. Keep deny-by-default on every protected table.
 2. Require tenant checks on `organization_id` for all tenant-scoped reads/writes.
@@ -53,10 +67,9 @@
 
 ## Planned Table Coverage (Not Yet Implemented)
 Future tables requiring explicit RLS before use:
-- `quotes`
-- `approvals`
 - `file_assets`
 - `notifications`
 - optional `comments` if introduced
 
 These tables are planned only; this document does not claim active policies exist yet for them.
+

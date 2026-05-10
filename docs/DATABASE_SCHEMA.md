@@ -98,11 +98,39 @@ Source of truth: `sql/phase2_request_lifecycle.sql`.
 - `created_at timestamptz not null default now()`
 - `updated_at timestamptz not null default now()`
 
-## Section D — Planned MVP Schema (Not Yet Implemented)
+
+## Section D — Implemented in Phase 4
+
+### `quotes`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references public.organizations(id) on delete cascade`
+- `request_id uuid not null references public.requests(id) on delete cascade`
+- `version_number integer not null`
+- `title text not null`
+- `scope_summary text not null`
+- `total_amount numeric(12,2) not null`
+- `currency text not null default 'USD'`
+- `notes_to_client text`
+- `valid_until date`
+- `status text not null default 'draft' check (status in ('draft','published','superseded','approved','rejected','changes_requested'))`
+- `created_by_user_id uuid not null references public.profiles(id)`
+- `published_by_user_id uuid references public.profiles(id)`
+- `published_at timestamptz`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+### `approvals`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references public.organizations(id) on delete cascade`
+- `quote_id uuid not null references public.quotes(id) on delete cascade`
+- `decision text not null check (decision in ('approved','rejected','changes_requested'))`
+- `note text`
+- `decided_by_user_id uuid not null references public.profiles(id)`
+- `decided_at timestamptz not null default now()`
+
+## Section E — Planned MVP Schema (Not Yet Implemented)
 
 ### Planned tables
-- `quotes`
-- `approvals`
 - `file_assets`
 - `notifications`
 - optional `comments` (if needed for request/task collaboration)
@@ -119,3 +147,4 @@ Source of truth: `sql/phase2_request_lifecycle.sql`.
 
 ## Terminology rule
 `organization_members`, `clients`, and `client_members` are the implemented Phase 1 names. Deprecated conceptual names such as `organization_memberships`, `client_accounts`, and `client_contacts` are not implemented schema objects.
+

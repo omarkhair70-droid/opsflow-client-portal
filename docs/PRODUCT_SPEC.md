@@ -31,12 +31,15 @@ OpsFlow addresses this through strict tenant isolation, role-aware access, and c
 - Membership-based auth redirect and org-scoped access guards.
 - Baseline RLS and helper functions for membership and role checks.
 
-## Planned MVP Capabilities (Next Phases)
+## Implemented MVP Capabilities
 - Request lifecycle (`requests`) and triage workflow.
-- Internal execution (`tasks`, planned comments support if required by workflow).
+- Internal execution (`tasks`).
 - Commercial flow (`quotes`, `approvals`).
+
+## Planned Next Capabilities
 - File governance (`file_assets`) with visibility enforcement.
-- Notifications (`notifications`) and append-only activity trail (`activity_events`).
+- Notifications (`notifications`).
+- Optional comments support if required by workflow.
 - End-to-end closure across the full product spine.
 
 ## Scope Boundaries
@@ -47,3 +50,4 @@ OpsFlow addresses this through strict tenant isolation, role-aware access, and c
 
 ## Positioning Relative to HILTECH
 OpsFlow is positioned as a flagship SaaS product with strong multi-tenant architecture, strict internal/client separation, and security-first workflow governance. It is not attempting HILTECH feature parity as the primary proof; its proof is operational rigor, access control integrity, and lifecycle traceability.
+
