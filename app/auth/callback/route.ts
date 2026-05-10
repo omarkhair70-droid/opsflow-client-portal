@@ -1,25 +1,6 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-
-function setSessionCookies(response: NextResponse, accessToken?: string | null, refreshToken?: string | null) {
-  if (accessToken) {
-    response.cookies.set("sb-access-token", accessToken, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-      secure: true,
-    });
-  }
-
-  if (refreshToken) {
-    response.cookies.set("sb-refresh-token", refreshToken, {
-      httpOnly: true,
-      path: "/",
-      sameSite: "lax",
-      secure: true,
-    });
-  }
-}
+import { setSessionCookies } from "@/lib/auth-cookies";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
