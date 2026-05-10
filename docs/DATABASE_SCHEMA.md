@@ -1,127 +1,80 @@
-# OpsFlow Database Schema (Conceptual, Phase 0A)
+# OpsFlow Database Schema
 
-## Scope
-This schema is conceptual and intended for planning. No migrations are defined in this phase.
+## Section A — Implemented Phase 1 Foundation Schema
 
-## Core Tables (Planned)
+Source of truth: `sql/phase1_foundation.sql`.
 
-### identity
-- `users`
-  - id
-  - email
-  - full_name
-  - created_at
-- `organizations`
-  - id
-  - name
-  - slug
-  - created_at
-- `organization_memberships`
-  - id
-  - organization_id
-  - user_id
-  - role
-  - status
-  - created_at
+### `profiles`
+- `id uuid primary key references auth.users(id) on delete cascade`
+- `full_name text`
+- `email text`
+- `avatar_url text`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
 
-### client model
-- `client_accounts`
-  - id
-  - organization_id
-  - name
-  - status
-  - created_at
-- `client_contacts`
-  - id
-  - organization_id
-  - client_account_id
-  - user_id (nullable if invited external not yet joined)
-  - contact_role
-  - created_at
+### `organizations`
+- `id uuid primary key default gen_random_uuid()`
+- `name text not null`
+- `slug text unique not null`
+- `logo_url text`
+- `industry text`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
 
-### workflow
+### `organization_members`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references organizations(id) on delete cascade`
+- `user_id uuid not null references profiles(id) on delete cascade`
+- `role text not null check (role in ('owner','admin','manager','staff'))`
+- `status text not null check (status in ('active','invited','suspended'))`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+- `unique (organization_id, user_id)`
+
+### `clients`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references organizations(id) on delete cascade`
+- `name text not null`
+- `status text not null check (status in ('active','inactive','archived'))`
+- `primary_contact_name text`
+- `primary_contact_email text`
+- `phone text`
+- `notes text`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+
+### `client_members`
+- `id uuid primary key default gen_random_uuid()`
+- `organization_id uuid not null references organizations(id) on delete cascade`
+- `client_id uuid not null references clients(id) on delete cascade`
+- `user_id uuid not null references profiles(id) on delete cascade`
+- `role text not null check (role in ('client_admin','client_user'))`
+- `status text not null check (status in ('active','invited','suspended'))`
+- `created_at timestamptz not null default now()`
+- `updated_at timestamptz not null default now()`
+- `unique (client_id, user_id)`
+
+## Section B — Planned MVP Schema (Not Yet Implemented)
+
+### Planned tables
 - `requests`
-  - id
-  - organization_id
-  - client_account_id
-  - title
-  - description
-  - status
-  - priority
-  - submitted_by_user_id
-  - created_at
-  - updated_at
 - `tasks`
-  - id
-  - organization_id
-  - request_id
-  - assigned_to_user_id
-  - title
-  - status
-  - due_at
-  - created_at
-  - updated_at
-
-### commercial
 - `quotes`
-  - id
-  - organization_id
-  - request_id
-  - version
-  - status
-  - subtotal_amount
-  - currency
-  - created_by_user_id
-  - created_at
 - `approvals`
-  - id
-  - organization_id
-  - quote_id
-  - decision
-  - comment
-  - decided_by_user_id
-  - decided_at
-
-### file governance
 - `file_assets`
-  - id
-  - organization_id
-  - request_id (nullable)
-  - quote_id (nullable)
-  - storage_path
-  - visibility_scope (`internal`, `client`)
-  - uploaded_by_user_id
-  - created_at
-
-### communications
 - `notifications`
-  - id
-  - organization_id
-  - user_id
-  - type
-  - payload_json
-  - read_at
-  - created_at
-
-### auditing
 - `activity_events`
-  - id
-  - organization_id
-  - actor_user_id
-  - entity_type
-  - entity_id
-  - action
-  - metadata_json
-  - occurred_at
+- `comments` (planned only if needed to support request/task collaboration in the product spine)
 
-## Relationship Summary
-- organization -> memberships, client_accounts, requests, tasks, quotes, files, notifications, activity_events
-- client_account -> requests, client_contacts
-- request -> tasks, quotes, files
-- quote -> approvals, files
+### Planned schema rules
+1. Every tenant-scoped business table must include `organization_id`.
+2. Portal-visible entities must include explicit visibility rules and policy-enforced filters.
+3. Internal-only notes/files/fields must remain non-portal-visible by default.
+4. `activity_events` must be append-only.
+5. Future workflow relations should follow the product spine:
+   - request → tasks/files/comments
+   - request → quotes → approvals
+   - critical transitions → activity events
 
-## Schema Rules
-1. All business tables include `organization_id`.
-2. Client-facing entities include `client_account_id` where relevant.
-3. Activity events are append-only.
-4. File visibility is explicit and policy-enforced.
+## Terminology rule
+`organization_members`, `clients`, and `client_members` are the implemented Phase 1 names. Deprecated conceptual names such as `organization_memberships`, `client_accounts`, and `client_contacts` are not implemented schema objects.

@@ -1,67 +1,43 @@
-# OpsFlow Architecture (Phase 0A)
+# OpsFlow Architecture
 
 ## Architecture Goals
-- SaaS-ready multi-tenant foundation
-- Security by default with strict tenant isolation
-- Clear separation between internal workspace and client portal
-- Evented audit history across all critical actions
+- SaaS-ready multi-tenant foundation.
+- Security by default with strict tenant isolation.
+- Clear separation between internal workspace and client portal.
+- Auditable lifecycle events across critical business actions.
 
-## High-Level Logical Architecture
-1. **Presentation Layer**
-   - Internal Workspace App (operations users)
-   - Client Portal App (external client users)
-2. **Application Layer**
-   - Auth/session handling
-   - Domain services (requests, tasks, files, quotes, approvals)
-   - Notification orchestration
-3. **Data Layer**
-   - Relational data model with tenant scoping
-   - File storage with visibility metadata
-   - Activity/audit event ledger
-4. **Security Layer (Cross-Cutting)**
-   - Role-based access model
-   - Row-level security policies
-   - Context-aware data filtering
+## Implemented Foundation (Phase 1)
+### Presentation and route separation
+- Internal context: `/app/[orgSlug]/*`
+- Portal context: `/portal/[orgSlug]/*`
 
-## Tenant Boundary Model
-- Every business record belongs to an `organization_id`.
-- Access checks must enforce organization membership.
-- Client users are further constrained by `client_account_id` relationships.
+### Auth and access enforcement
+- Supabase auth/session handling is active.
+- Membership-based redirect flow is active (`/auth/route`).
+- Internal guard implemented: `requireInternalOrgAccess`.
+- Portal guard implemented: `requirePortalOrgAccess`.
 
-## Workspace vs Portal Separation
-- **Internal Workspace**:
-  - broader operational visibility
-  - privileged workflow functions
-  - internal-only notes/files/events
-- **Client Portal**:
-  - restricted records tied to client account
-  - no internal-only artifacts
-  - approval and response-focused interactions
+### Data and policy baseline
+- Implemented tables: `profiles`, `organizations`, `organization_members`, `clients`, `client_members`.
+- RLS is enabled on implemented foundation tables.
+- Membership/role helper functions are active for policy checks.
 
-## Domain Service Boundaries
-- **Identity & Membership**: users, org memberships, roles
-- **Client Accounts**: external entities and contacts
-- **Request Intake**: request creation, triage, status transitions
-- **Task Execution**: assignment, due dates, completion states
-- **Quote & Approval**: quote versions, decision workflows
-- **File Governance**: upload metadata, visibility labels, ownership
-- **Activity Ledger**: append-only event stream for auditability
+## Planned Domain Service Boundaries (MVP)
+The following boundaries are planned and should be implemented as phased vertical slices, not treated as already complete:
+- **Request Intake**: `requests` creation, triage, and lifecycle transitions.
+- **Task Execution**: `tasks` assignment, ownership, due dates, completion.
+- **Commercial Flow**: `quotes` versioning and `approvals` decisions.
+- **File Governance**: `file_assets` metadata + visibility controls.
+- **Notifications**: event-triggered user notifications.
+- **Activity Ledger**: append-only `activity_events` for critical transitions.
 
-## Security & Compliance Considerations
-- Principle of least privilege
-- Deny-by-default policy posture
-- Immutable audit entries for critical operations
-- Visibility labels enforced at data policy layer
+## Security Model (Cross-Cutting)
+- Deny-by-default posture for protected data.
+- Tenant boundary enforced by `organization_id` on business tables.
+- Internal and portal payloads are context-shaped separately.
+- Internal-only records must never be exposed to portal users.
 
-## Scalability Considerations
-- Tenant-scoped indexing strategy
-- Event tables partition-ready for growth
-- Service boundaries designed for future modularization
-- Separation of read patterns between internal and portal contexts
-
-## Observability (Documentation Target)
-Future implementation should include:
-- request lifecycle metrics
-- task SLA tracking
-- approval turnaround times
-- security/audit policy hit logs
+## Scalability Direction
+- Tenant-scoped querying and indexing patterns.
+- Domain boundaries designed for modular evolution.
+- Event/audit structures designed for growth and compliance needs.
