@@ -1,12 +1,47 @@
 # OpsFlow Architecture
 
-## Implemented domain boundaries
-- Request Intake
-- Task Execution
-- Commercial Flow
+## Architecture Goals
+- SaaS-ready multi-tenant foundation.
+- Security by default with strict tenant isolation.
+- Clear separation between internal workspace and client portal.
+- Auditable lifecycle events across critical business actions.
 
-## Planned domain boundaries
-- File Governance
-- Notifications
-- Optional comments
-- Closure workflow
+## Implemented Foundation (Phase 1)
+### Presentation and route separation
+- Internal context: `/app/[orgSlug]/*`
+- Portal context: `/portal/[orgSlug]/*`
+
+### Auth and access enforcement
+- Supabase auth/session handling is active using server-side httpOnly cookies.
+- Email magic-link/signup confirmation is handled by `/auth/confirm` via Supabase token-hash verification (`verifyOtp`) before redirecting to `/auth/route`.
+- Membership-based redirect flow is active (`/auth/route`).
+- Internal guard implemented: `requireInternalOrgAccess`.
+- Portal guard implemented: `requirePortalOrgAccess`.
+
+### Data and policy baseline
+- Implemented tables: `profiles`, `organizations`, `organization_members`, `clients`, `client_members`.
+- RLS is enabled on implemented foundation tables.
+- Membership/role helper functions are active for policy checks.
+
+## Domain Service Boundaries (MVP)
+Implemented boundaries:
+- **Request Intake**: `requests` creation, triage, and lifecycle transitions.
+- **Task Execution**: `tasks` assignment, ownership, due dates, completion, and activity audit events.
+- **Commercial Flow**: `quotes` versioning/publication and `approvals` decisions.
+
+Planned boundaries:
+- **File Governance**: `file_assets` metadata + visibility controls.
+- **Notifications**: event-triggered user notifications.
+- **Optional comments / closure** extensions where required.
+
+## Security Model (Cross-Cutting)
+- Deny-by-default posture for protected data.
+- Tenant boundary enforced by `organization_id` on business tables.
+- Internal and portal payloads are context-shaped separately.
+- Internal-only records must never be exposed to portal users.
+
+## Scalability Direction
+- Tenant-scoped querying and indexing patterns.
+- Domain boundaries designed for modular evolution.
+- Event/audit structures designed for growth and compliance needs.
+

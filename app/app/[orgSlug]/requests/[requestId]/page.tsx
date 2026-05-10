@@ -23,7 +23,6 @@ async function updateRequest(formData: FormData) {
 
   const membership = await requireInternalOrgMembership(orgSlug);
   const org = { id: membership.id, slug: membership.slug, name: membership.name };
-  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
@@ -63,7 +62,6 @@ async function createTask(formData: FormData) {
 
   const membership = await requireInternalOrgMembership(orgSlug);
   const org = { id: membership.id, slug: membership.slug, name: membership.name };
-  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
