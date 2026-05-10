@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { requireInternalOrgAccess } from "@/lib/access";
+import { requireInternalOrgMembership } from "@/lib/access";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   REQUEST_PRIORITIES,
@@ -21,7 +21,9 @@ async function updateRequest(formData: FormData) {
 
   if (!REQUEST_STATUSES.includes(status as any) || !REQUEST_PRIORITIES.includes(priority as any)) return;
 
-  const org = await requireInternalOrgAccess(orgSlug);
+  const membership = await requireInternalOrgMembership(orgSlug);
+  const org = { id: membership.id, slug: membership.slug, name: membership.name };
+  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
@@ -59,7 +61,9 @@ async function createTask(formData: FormData) {
 
   if (!title) return;
 
-  const org = await requireInternalOrgAccess(orgSlug);
+  const membership = await requireInternalOrgMembership(orgSlug);
+  const org = { id: membership.id, slug: membership.slug, name: membership.name };
+  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
@@ -84,7 +88,9 @@ async function createQuoteDraft(formData: FormData) {
   "use server";
   const orgSlug = String(formData.get("orgSlug") ?? "");
   const requestId = String(formData.get("requestId") ?? "");
-  const org = await requireInternalOrgAccess(orgSlug);
+  const membership = await requireInternalOrgMembership(orgSlug);
+  const org = { id: membership.id, slug: membership.slug, name: membership.name };
+  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id; if (!userId) redirect('/login');
@@ -99,7 +105,9 @@ export default async function InternalRequestDetail({
   params: Promise<{ orgSlug: string; requestId: string }>;
 }) {
   const { orgSlug, requestId } = await params;
-  const org = await requireInternalOrgAccess(orgSlug);
+  const membership = await requireInternalOrgMembership(orgSlug);
+  const org = { id: membership.id, slug: membership.slug, name: membership.name };
+  const canManageQuotes = ["owner", "admin", "manager"].includes(membership.role);
   const supabase = await createServerSupabaseClient();
 
   const [{ data: request }, { data: events }, { data: members }, { data: tasks }, { data: quotes }] = await Promise.all([
@@ -221,7 +229,7 @@ export default async function InternalRequestDetail({
       
 <section>
         <h2 className="text-xl font-medium mb-2">Commercial Flow</h2>
-        <form action={createQuoteDraft} className="space-y-2 max-w-md mb-4">
+        {canManageQuotes ? <form action={createQuoteDraft} className="space-y-2 max-w-md mb-4">
           <input type="hidden" name="orgSlug" value={org.slug} /><input type="hidden" name="requestId" value={request.id} />
           <input name="title" required placeholder="Quote title" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
           <textarea name="scope_summary" required placeholder="Scope summary" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
@@ -230,7 +238,7 @@ export default async function InternalRequestDetail({
           <textarea name="notes_to_client" placeholder="Notes" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
           <input name="valid_until" type="date" className="w-full rounded border border-slate-600 bg-slate-900 p-2"/>
           <button type="submit" className="rounded bg-blue-600 px-4 py-2">Create Quote Draft</button>
-        </form>
+        </form> : <p className="text-sm text-slate-400 mb-3">Only owner/admin/manager can create quote drafts.</p>}
         <ul className="space-y-2">{(quotes ?? []).map((quote: any) => (<li key={quote.id}><Link className="text-blue-400 hover:underline" href={`/app/${org.slug}/quotes/${quote.id}`}>V{quote.version_number} - {quote.title}</Link> ({QUOTE_STATUS_LABELS[quote.status as keyof typeof QUOTE_STATUS_LABELS]})</li>))}</ul>
       </section>
 

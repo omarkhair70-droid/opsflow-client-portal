@@ -7,7 +7,16 @@ export type OrgAccessContext = {
   name: string;
 };
 
+export type InternalOrgMembership = OrgAccessContext & {
+  role: "owner" | "admin" | "manager" | "staff";
+};
+
 export async function requireInternalOrgAccess(orgSlug: string): Promise<OrgAccessContext> {
+  const membership = await requireInternalOrgMembership(orgSlug);
+  return { id: membership.id, slug: membership.slug, name: membership.name };
+}
+
+export async function requireInternalOrgMembership(orgSlug: string): Promise<InternalOrgMembership> {
   const supabase = await createServerSupabaseClient();
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
@@ -15,7 +24,7 @@ export async function requireInternalOrgAccess(orgSlug: string): Promise<OrgAcce
 
   const { data } = await supabase
     .from("organizations")
-    .select("id, slug, name, members:organization_members!inner(user_id,status)")
+    .select("id,slug,name,members:organization_members!inner(user_id,status,role)")
     .eq("slug", orgSlug)
     .eq("members.user_id", userId)
     .eq("members.status", "active")
@@ -23,11 +32,8 @@ export async function requireInternalOrgAccess(orgSlug: string): Promise<OrgAcce
 
   if (!data) redirect("/forbidden");
 
-  return {
-    id: data.id,
-    slug: data.slug,
-    name: data.name,
-  };
+  const member = (data.members as Array<{ role: InternalOrgMembership["role"] }>)[0];
+  return { id: data.id, slug: data.slug, name: data.name, role: member.role };
 }
 
 export async function requirePortalOrgAccess(orgSlug: string): Promise<OrgAccessContext> {
@@ -38,19 +44,12 @@ export async function requirePortalOrgAccess(orgSlug: string): Promise<OrgAccess
 
   const { data } = await supabase
     .from("organizations")
-    .select(
-      "id, slug, name, clients:clients!inner(members:client_members!inner(user_id,status))",
-    )
+    .select("id, slug, name, clients:clients!inner(members:client_members!inner(user_id,status))")
     .eq("slug", orgSlug)
     .eq("clients.members.user_id", userId)
     .eq("clients.members.status", "active")
     .maybeSingle();
 
   if (!data) redirect("/forbidden");
-
-  return {
-    id: data.id,
-    slug: data.slug,
-    name: data.name,
-  };
+  return { id: data.id, slug: data.slug, name: data.name };
 }

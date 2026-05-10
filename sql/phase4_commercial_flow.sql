@@ -46,6 +46,10 @@ begin
     raise exception 'quote.request_id must match quote.organization_id';
   end if;
 
+  if tg_op = 'INSERT' then
+    if new.created_by_user_id <> auth.uid() then raise exception 'created_by_user_id must equal auth.uid()'; end if;
+  end if;
+
   if tg_op = 'UPDATE' then
     if new.organization_id <> old.organization_id or new.request_id <> old.request_id or new.created_by_user_id <> old.created_by_user_id or new.version_number <> old.version_number then
       raise exception 'quote identity fields are immutable';
@@ -54,6 +58,15 @@ begin
       new.title is distinct from old.title or new.scope_summary is distinct from old.scope_summary or new.total_amount is distinct from old.total_amount or
       new.currency is distinct from old.currency or new.notes_to_client is distinct from old.notes_to_client or new.valid_until is distinct from old.valid_until
     ) then raise exception 'published/non-draft quote content is immutable'; end if;
+
+    if old.status='draft' and new.status='published' then
+      if new.published_by_user_id is null or new.published_by_user_id <> auth.uid() or new.published_at is null then
+        raise exception 'publish transition requires published_by_user_id=auth.uid() and published_at';
+      end if;
+    end if;
+    if old.status <> 'draft' and (new.published_by_user_id is distinct from old.published_by_user_id or new.published_at is distinct from old.published_at) then
+      raise exception 'published_by_user_id and published_at are immutable after publication';
+    end if;
 
     if new.status <> old.status then
       if old.status = 'draft' and new.status = 'published' then null;
@@ -104,6 +117,38 @@ begin
 end; $$;
 create trigger quotes_audit_insert after insert on public.quotes for each row execute function public.audit_quote_events();
 create trigger quotes_audit_update after update on public.quotes for each row execute function public.audit_quote_events();
+
+
+create or replace function public.publish_quote(p_quote_id uuid)
+returns public.quotes
+language plpgsql
+security invoker
+set search_path = public
+as $$
+declare
+  target public.quotes;
+begin
+  if auth.uid() is null then raise exception 'Authentication required'; end if;
+
+  select * into target from public.quotes where id = p_quote_id for update;
+  if target.id is null then raise exception 'Quote not found'; end if;
+  if target.status <> 'draft' then raise exception 'Only draft quotes can be published'; end if;
+  if not public.has_org_role(target.organization_id, array['owner','admin','manager']) then
+    raise exception 'Not authorized to publish quote';
+  end if;
+
+  update public.quotes set status='superseded'
+  where request_id = target.request_id and id <> target.id and status in ('published','changes_requested');
+
+  update public.quotes
+    set status='published', published_by_user_id=auth.uid(), published_at=now()
+  where id = target.id and status='draft'
+  returning * into target;
+
+  if target.id is null then raise exception 'Publish failed'; end if;
+  return target;
+end;
+$$;
 
 create or replace function public.apply_approval_to_quote() returns trigger language plpgsql security definer set search_path=public as $$
 begin

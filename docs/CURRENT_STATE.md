@@ -1,75 +1,26 @@
 # OpsFlow Current State Snapshot
 
-## What OpsFlow is
-OpsFlow is a SaaS Client Portal & Business Operations Platform for B2B service companies, designed to run the lifecycle from request intake to internal execution, quote/approval, activity history, and closure.
-
 ## What exists today (implemented)
 - Phase 1 foundation is implemented.
 - Phase 2 Request Lifecycle is implemented.
 - Phase 3 Internal Execution is implemented.
-- Supabase auth/session flow is implemented with server-side session cookies and token-hash confirmation for email magic links.
-- Profile auto-provisioning is implemented.
-- Org-scoped internal and portal shells are implemented.
-- Membership-based redirecting and org-scoped access guards are implemented.
-- Baseline RLS is implemented on foundation tables.
-- Request lifecycle RLS is implemented on `requests` and `activity_events`.
-- Task execution RLS is implemented on `tasks` (internal only).
-
-## What does not exist yet (planned)
-- Comments collaboration model.
-- Quotes/approvals lifecycle.
-- File governance flows.
-- Notifications and full activity event domain expansion beyond request/task events.
-- End-to-end closure workflow.
+- Phase 4 Commercial Flow is implemented.
 
 ## Implemented tables
-- `profiles`
-- `organizations`
-- `organization_members`
-- `clients`
-- `client_members`
-- `requests`
-- `activity_events`
+- `profiles`, `organizations`, `organization_members`, `clients`, `client_members`
+- `requests`, `activity_events`
 - `tasks`
+- `quotes`, `approvals`
 
 ## Implemented routes
-- `/login`
-- `/signup`
-- `/auth/callback`
-- `/auth/confirm`
-- `/auth/route`
-- `/onboarding`
-- `/forbidden`
-- `/app/[orgSlug]/dashboard`
-- `/app/[orgSlug]/clients`
-- `/app/[orgSlug]/requests`
-- `/app/[orgSlug]/requests/[requestId]`
-- `/app/[orgSlug]/tasks`
-- `/app/[orgSlug]/tasks/[taskId]`
-- `/portal/[orgSlug]/dashboard`
-- `/portal/[orgSlug]/requests`
-- `/portal/[orgSlug]/requests/[requestId]`
+- Internal: `/app/[orgSlug]/dashboard`, `/clients`, `/requests`, `/requests/[requestId]`, `/tasks`, `/tasks/[taskId]`, `/quotes`, `/quotes/[quoteId]`
+- Portal: `/portal/[orgSlug]/dashboard`, `/requests`, `/requests/[requestId]`, `/quotes`, `/quotes/[quoteId]`
 
-## Implemented auth/access model
-- Auth provider: Supabase Auth.
-- Redirect model: `/auth/route` resolves active membership and routes accordingly.
-- Internal guard helper: `requireInternalOrgAccess`.
-- Portal guard helper: `requirePortalOrgAccess`.
-- RLS helper functions:
-  - `is_org_member`
-  - `has_org_role`
-  - `is_client_member`
-  - `has_client_role`
+## What does not exist yet (planned)
+- File governance flows.
+- Notifications and full activity event domain expansion beyond request/task/quote events.
+- Optional comments collaboration model.
+- End-to-end closure workflow.
 
 ## Next build target
-**Phase 4 — Commercial Flow**
-
-## Non-goals for next phase
-- No auth model rewrite.
-- No table renames to conceptual legacy names.
-- No UI-wide redesign.
-- No unrelated scope expansion (CRM/ERP/accounting/AI).
-
-## Conflict resolution note
-If another document conflicts with this file and the current code/SQL implementation, current implementation wins until docs are updated.
-\n## Phase 4 Commercial Flow (Implemented)\nQuotes + approvals are now implemented with RLS, quote versioning, and activity event audit trail. Next target: **Phase 5 — File Governance**.
+**Phase 5 — File Governance**
