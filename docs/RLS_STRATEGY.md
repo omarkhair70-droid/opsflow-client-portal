@@ -49,6 +49,7 @@
 
 ## Implemented Table Coverage (Phase 3 additions)
 - `tasks`: active internal org members can `select/insert/update` in-tenant; no delete policy; no portal access.
+- `profiles`: self-read remains, plus shared active internal org co-member profile read for internal teammate assignment UX.
 
 ## Planned Table Coverage (Not Yet Implemented)
 Future tables requiring explicit RLS before use:

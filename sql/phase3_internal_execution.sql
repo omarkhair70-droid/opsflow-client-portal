@@ -190,3 +190,28 @@ with check (
       and om.status = 'active'
   )
 );
+
+
+create or replace function public.shares_active_internal_org(target_user_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.organization_members me
+    join public.organization_members them
+      on them.organization_id = me.organization_id
+    where me.user_id = auth.uid()
+      and me.status = 'active'
+      and them.user_id = target_user_id
+      and them.status = 'active'
+  );
+$$;
+
+create policy "profile read by shared active internal org"
+on public.profiles
+for select
+using (public.shares_active_internal_org(id));
