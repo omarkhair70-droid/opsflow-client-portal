@@ -79,14 +79,19 @@ Comments, file governance, notifications, and closure workflows are **planned bu
 5. Run `sql/phase4_commercial_flow.sql` in Supabase SQL editor.
 6. Start app: `npm run dev`
 
-## Auth setup notes (Supabase email templates)
+## Auth setup notes (Supabase Google OAuth)
 OpsFlow uses **server-side session cookies** (`sb-access-token`, `sb-refresh-token`) for authenticated routing.
 
-Magic-link and email confirmation flows must hit the server confirmation route so the backend can verify the token hash and set httpOnly cookies before redirecting to `/auth/route`.
+Login is Google-first via Supabase OAuth from `/login`, with redirect to:
+`{{ .SiteURL }}/auth/callback`
 
-For the **Magic Link** email template, use:
-`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
+In Supabase Auth settings:
+- Enable the **Google** provider.
+- Configure Google OAuth credentials in Supabase.
+- Add your app URL(s) to Supabase redirect allow-list, including `/auth/callback`.
 
-For the **Confirm signup** email template, use:
+The server callback exchanges the auth `code`, sets httpOnly cookies, and redirects to `/auth/route`.
+
+If you still use email confirmation flows, they should continue to point at:
 `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`
 
